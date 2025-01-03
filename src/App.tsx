@@ -9,7 +9,7 @@ function App() {
                 <h1>Escape from Tarkov - Task Graph</h1>
                 <a href="https://github.com/mcserep/tarkov-graph" target="_blank" className="github-logo">
                     <img
-                        src="/github.png"
+                        src={`${import.meta.env.BASE_URL}/github.png`}
                         alt="GitHub"
                         style={{width: '20px', height: '20px', marginRight: '5px'}}
                     />
