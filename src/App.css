@@ -12,3 +12,7 @@ header {
   border-right: 1px solid #242424;
   padding: 10px;
 }
+
+header > .github-logo {
+  font-size: 0.8em;
+}
