@@ -18,6 +18,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
     "cytoscape-dagre": "^2.5.0",
     "graphql-request": "^7.1.2",

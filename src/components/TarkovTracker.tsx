@@ -10,13 +10,13 @@ type Props = {
 }
 
 export function TarkovTracker({
-    onProgressLoaded
-}: Props) {
+                                  onProgressLoaded
+                              }: Props) {
     const inputTokenRef = useRef<HTMLInputElement>(null);
     const [trackerToken, setTrackerToken] = useState<string>(localStorage.getItem('tarkovTrackerToken') ?? '');
 
     const [progress, setProgress] = useState<ProgressData | null>(null);
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     useEffect(() => {
         const fetchProgress = async () => {
@@ -24,13 +24,13 @@ export function TarkovTracker({
                 return;
             }
 
-            const loadSnackKey = enqueueSnackbar('Fetching user progress...', { variant: 'info' });
+            const loadSnackKey = enqueueSnackbar('Fetching user progress...', {variant: 'info'});
             try {
                 const data = await TarkovTrackerApi.fetchUserProgress(trackerToken);
                 setProgress(data);
                 onProgressLoaded(data);
             } catch (err) {
-                enqueueSnackbar(`Tarkov Tracker Error: ${(err as Error).message}`, { variant: 'error' });
+                enqueueSnackbar(`Tarkov Tracker Error: ${(err as Error).message}`, {variant: 'error'});
             } finally {
                 closeSnackbar(loadSnackKey);
             }
