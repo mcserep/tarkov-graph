@@ -10,8 +10,8 @@ type Props = {
 }
 
 export function TarkovTracker({
-                                  onProgressLoaded
-                              }: Props) {
+      onProgressLoaded
+  }: Props) {
     const inputTokenRef = useRef<HTMLInputElement>(null);
     const [trackerToken, setTrackerToken] = useState<string>(localStorage.getItem('tarkovTrackerToken') ?? '');
 
@@ -37,6 +37,9 @@ export function TarkovTracker({
         };
 
         fetchProgress();
+        // This rule is disabled, because it wants to add onProgressLoaded to the dependency array,
+        // which would cause an infinite loop of re-renders.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trackerToken]);
 
     const handleSetToken = () => {

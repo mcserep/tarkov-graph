@@ -1,37 +1,23 @@
-import LightModeIcon from '@mui/icons-material/LightMode';
-import './ThemeSelector.css'
 import {IconButton} from "@mui/material";
-import {darkTheme, lightTheme, useThemeContext} from "./ThemeContext.ts";
-import {useEffect, useState} from "react";
 import {PaletteMode} from "@mui/material/styles/createPalette";
+import LightModeIcon from '@mui/icons-material/LightMode';
 
-export function ThemeSelector() {
-    const {theme, setTheme} = useThemeContext();
-    const THEME_VARIABLE_NAME = 'theme';
-    const [storedTheme] = useState<PaletteMode>((localStorage.getItem(THEME_VARIABLE_NAME) || 'dark') as PaletteMode);
+import './ThemeSelector.css'
 
-    useEffect(() => {
-        switch (storedTheme) {
-            case 'dark': {
-                setTheme(darkTheme);
-                break;
-            }
-            case "light": {
-                setTheme(lightTheme);
-                break
-            }
-        }
-        // eslint-disable-next-line
-    }, [storedTheme]);
-    useEffect(() => {
-        localStorage.setItem(THEME_VARIABLE_NAME, theme?.palette.mode || 'dark');
-    }, [theme]);
+type Props = {
+    theme: PaletteMode,
+    setTheme: (theme: PaletteMode) => void,
+}
 
+export function ThemeSelector({
+    theme,
+    setTheme,
+}: Props) {
     function toggleTheme() {
-        if (theme === null || theme.palette.mode === 'light') {
-            setTheme(darkTheme);
+        if (theme !== 'light') {
+            setTheme('light');
         } else {
-            setTheme(lightTheme);
+            setTheme('dark');
         }
     }
 
