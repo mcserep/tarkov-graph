@@ -1,6 +1,5 @@
 import {useState} from 'react';
-import {Box, createTheme, CssBaseline, Drawer, ThemeProvider, Typography} from '@mui/material';
-import {PaletteMode} from '@mui/material/styles/createPalette';
+import {Box, createTheme, CssBaseline, Drawer, Theme, ThemeProvider, Typography} from '@mui/material';
 import {SnackbarProvider} from 'notistack';
 import {TarkovTracker} from './components/TarkovTracker.tsx';
 import {ProgressData} from './resources/ProgressResponse.ts';
@@ -10,20 +9,9 @@ import {TarkovGraph} from "./components/TarkovGraph.tsx";
 
 import './App.css'
 
-const THEME_VARIABLE_NAME = 'theme';
-
 function App() {
     const [userProgress, setUserProgress] = useState<ProgressData | null>(null);
-
-    const storedTheme = (localStorage.getItem(THEME_VARIABLE_NAME)
-        || (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light')) as PaletteMode;
-    const [customTheme, setCustomTheme] = useState<PaletteMode>(storedTheme);
-
-    const theme = createTheme({
-        palette: {
-            mode: customTheme,
-        },
-    });
+    const [theme, setTheme] = useState<Theme>(createTheme());
 
     const handleUserProgressLoaded = (progress: ProgressData) => {
         setUserProgress(progress);
@@ -77,7 +65,7 @@ function App() {
                             width: 'calc(100% - 240px)',
                         }}>
                         <div className="theme-selector-div">
-                            <ThemeSelector theme={customTheme} setTheme={setCustomTheme} />
+                            <ThemeSelector theme={theme} setTheme={setTheme}/>
                         </div>
                         <TarkovGraph progress={userProgress}/>
                     </Box>
