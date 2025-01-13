@@ -29,14 +29,26 @@ export function ThemeSelector({
         }
     }, [theme]);
 
+    function getDefaultTheme() {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? darkTheme
+            : lightTheme;
+    }
+
     function getStoredTheme() {
-        const storedPaletteMode = (localStorage.getItem(THEME_VARIABLE_NAME) || (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light')) as PaletteMode;
-        switch (storedPaletteMode) {
-            case 'dark':
-                return darkTheme;
-            case 'light':
-                return lightTheme
+        const storedPaletteMode = localStorage.getItem(THEME_VARIABLE_NAME) as PaletteMode;
+        if (storedPaletteMode) {
+            switch (storedPaletteMode) {
+                case 'dark':
+                    return darkTheme;
+                case 'light':
+                    return lightTheme;
+                default:
+                    return getDefaultTheme();
+            }
         }
+        return getDefaultTheme();
+
     }
 
     function toggleTheme() {
