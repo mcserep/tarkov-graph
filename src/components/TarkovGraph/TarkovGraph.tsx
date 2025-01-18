@@ -18,7 +18,7 @@ type Props = {
 
 export function TarkovGraph({
     progress
- }: Props) {
+}: Props) {
     Cytoscape.use(dagre); // Register the dagre layout extension
 
     const [tasks, setTasks] = useState<Task[]>([]);

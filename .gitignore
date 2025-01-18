@@ -24,4 +24,5 @@ yarn-error.log*
 
 # editors
 .vscode/
-.idea/
+.idea/*
+!.idea/codeStyles/
