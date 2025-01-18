@@ -1,10 +1,10 @@
+import {useEffect} from "react";
 import {IconButton, Theme} from "@mui/material";
+import {PaletteMode} from "@mui/material/styles/createPalette";
 import LightModeIcon from '@mui/icons-material/LightMode';
+import {darkTheme, lightTheme} from "./Themes.ts";
 
 import './ThemeSelector.css'
-import {darkTheme, lightTheme} from "./Themes.ts";
-import {useEffect} from "react";
-import {PaletteMode} from "@mui/material/styles/createPalette";
 
 type Props = {
     theme: Theme,
@@ -15,9 +15,9 @@ const THEME_VARIABLE_NAME = 'theme';
 
 
 export function ThemeSelector({
-                                  theme,
-                                  setTheme,
-                              }: Props) {
+    theme,
+    setTheme,
+}: Props) {
     useEffect(() => {
         const storedTheme = getStoredTheme();
         setTheme(storedTheme);

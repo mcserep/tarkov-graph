@@ -10,8 +10,8 @@ type Props = {
 }
 
 export function TarkovTracker({
-      onProgressLoaded
-  }: Props) {
+    onProgressLoaded
+}: Props) {
     const inputTokenRef = useRef<HTMLInputElement>(null);
     const [trackerToken, setTrackerToken] = useState<string>(localStorage.getItem('tarkovTrackerToken') ?? '');
 
