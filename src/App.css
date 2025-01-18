@@ -1,0 +1,4 @@
+.theme-selector-div {
+    position: absolute;
+    z-index: 10000;
+}

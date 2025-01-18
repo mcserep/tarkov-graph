@@ -7,6 +7,11 @@
     right: 0;
 }
 
+.github-corner.theme-dark > svg {
+    fill: #fff;
+    color: #151513;
+}
+
 .github-corner .octo-arm {
     transform-origin: 130px 106px;
 }
