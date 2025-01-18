@@ -2,8 +2,8 @@ import {useEffect, useRef, useState} from 'react';
 import {Button, TextField, Typography} from '@mui/material';
 import {useSnackbar} from 'notistack';
 
-import * as TarkovTrackerApi from '../api/TarkovTrackerApi.ts';
-import {ProgressData} from '../resources/ProgressResponse.ts';
+import * as TarkovTrackerApi from '@/api/TarkovTrackerApi.ts';
+import {ProgressData} from '@/resources/ProgressResponse.ts';
 
 type Props = {
     onProgressLoaded: (progress: ProgressData) => void;

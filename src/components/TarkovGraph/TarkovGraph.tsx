@@ -5,10 +5,10 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import dagre from 'cytoscape-dagre';
 import {ClientError} from 'graphql-request'
 
-import * as TarkovDevApi from "../api/TarkovDevApi.ts";
-import {Task} from '../resources/TaskResponse.ts';
-import {ProgressData} from '../resources/ProgressResponse.ts';
-import {GraphLayout, GraphStylesheet} from '../utils/GraphDecorator.ts';
+import * as TarkovDevApi from "@/api/TarkovDevApi.ts";
+import {Task} from '@/resources/TaskResponse.ts';
+import {ProgressData} from '@/resources/ProgressResponse.ts';
+import {GraphLayout, GraphStylesheet} from '@/utils/GraphDecorator.ts';
 
 import './TarkovGraph.css'
 

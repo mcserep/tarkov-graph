@@ -1,11 +1,11 @@
 import {useState} from 'react';
 import {Box, createTheme, CssBaseline, Drawer, Theme, ThemeProvider, Typography} from '@mui/material';
 import {SnackbarProvider} from 'notistack';
-import {TarkovTracker} from './components/TarkovTracker.tsx';
-import {ProgressData} from './resources/ProgressResponse.ts';
-import {GitHubCorner} from './components/GitHubCorner.tsx';
-import {ThemeSelector} from "./components/theme-selector/ThemeSelector.tsx";
-import {TarkovGraph} from "./components/TarkovGraph.tsx";
+import {TarkovTracker} from '@/components/TarkovTracker/TarkovTracker.tsx';
+import {ProgressData} from '@/resources/ProgressResponse.ts';
+import {GitHubCorner} from '@/components/GitHubCorner/GitHubCorner.tsx';
+import {ThemeSelector} from "@/components/ThemeSelector/ThemeSelector.tsx";
+import {TarkovGraph} from "@/components/TarkovGraph/TarkovGraph.tsx";
 
 import './App.css'
 
