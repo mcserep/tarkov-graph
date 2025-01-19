@@ -1,7 +1,8 @@
 import {GraphQLClient} from 'graphql-request';
 import {TaskResponse} from '../resources/TaskResponse.ts';
 
-const endpoint = 'https://api.tarkov.dev/graphql';
+export const endpoint = 'https://api.tarkov.dev/graphql';
+
 const query = `
 {
     tasks(lang: en) {
