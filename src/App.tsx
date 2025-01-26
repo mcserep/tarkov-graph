@@ -6,12 +6,14 @@ import {ProgressData} from '@/resources/ProgressResponse.ts';
 import {GitHubCorner} from '@/components/GitHubCorner/GitHubCorner.tsx';
 import {ThemeSelector} from "@/components/ThemeSelector/ThemeSelector.tsx";
 import {TarkovGraph} from "@/components/TarkovGraph/TarkovGraph.tsx";
+import {RewardItemFilter} from "@/components/reward-item-filter/RewardItemFilter.tsx";
 
 import './App.css'
 
 function App() {
     const [userProgress, setUserProgress] = useState<ProgressData | null>(null);
     const [theme, setTheme] = useState<Theme>(createTheme());
+    const [targetTaskIds, setTargetTaskIds] = useState<Set<string>>(new Set<string>());
 
     const handleUserProgressLoaded = (progress: ProgressData) => {
         setUserProgress(progress);
@@ -50,6 +52,14 @@ function App() {
 
                             {/* Form */}
                             <Box sx={{p: 2, borderTop: "1px solid #ddd"}}>
+                                <RewardItemFilter
+                                    handleRewardItemSelected={item => {
+                                        if (!item) {
+                                            setTargetTaskIds(new Set<string>());
+                                        } else {
+                                            setTargetTaskIds(new Set<string>(item.taskIds));
+                                        }
+                                    }}/>
                                 <TarkovTracker
                                     onProgressLoaded={handleUserProgressLoaded}/>
                             </Box>
@@ -67,7 +77,10 @@ function App() {
                         <div className="theme-selector-div">
                             <ThemeSelector theme={theme} setTheme={setTheme}/>
                         </div>
-                        <TarkovGraph progress={userProgress}/>
+                        <TarkovGraph
+                            targetTaskIds={targetTaskIds}
+                            setTargetTaskIds={setTargetTaskIds}
+                            progress={userProgress}/>
                     </Box>
                 </Box>
 
