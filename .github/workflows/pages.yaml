@@ -34,7 +34,7 @@ jobs:
     # Add a dependency to the build job
     needs: build
     # Only on the default (master) branch
-    if: github.ref_name == github.event.repository.default_branch
+    #if: github.ref_name == github.event.repository.default_branch
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
