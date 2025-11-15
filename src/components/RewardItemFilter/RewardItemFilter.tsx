@@ -1,8 +1,9 @@
-import './RewardItemFilter.module.css';
 import {Autocomplete, TextField} from "@mui/material";
 import {SyntheticEvent, useEffect, useState} from "react";
-import {RewardItemApi} from "./resources/RewardItemApi.ts";
-import {Item, RewardItemResponse} from "./resources/RewardItemResponse.ts";
+
+import {fetchRewardItems} from "@/api/TarkovDevApi.ts";
+import {Item, RewardItemResponse} from "@/resources/RewardItemResponse.ts";
+import {useTargetTask} from "@/contexts/TargetTaskContext.tsx";
 
 interface TaskRewardItem {
     itemId: string;
@@ -10,19 +11,13 @@ interface TaskRewardItem {
     taskIds: Set<string>;
 }
 
-type Props = {
-    handleRewardItemSelected: (itemId: TaskRewardItem | null) => void;
-}
-
-export function RewardItemFilter({
-                                     handleRewardItemSelected
-                                 }: Props) {
-
+export function RewardItemFilter() {
+    const {setTargetTaskIds} = useTargetTask();
     const [taskRewards, setTaskRewards] = useState([] as TaskRewardItem[]);
 
     useEffect(() => {
         const fetchTaskRewards = async () => {
-            const taskResponse = await RewardItemApi.fetchTaskRewardItems();
+            const taskResponse = await fetchRewardItems();
             const rewardItems = buildRewardItemArray(taskResponse);
             setTaskRewards(rewardItems);
         };
@@ -59,7 +54,11 @@ export function RewardItemFilter({
     }
 
     const handleItemSelected = (_: SyntheticEvent, value: TaskRewardItem | null) => {
-        handleRewardItemSelected(value);
+        if (!value) {
+            setTargetTaskIds(new Set<string>());
+        } else {
+            setTargetTaskIds(new Set<string>(value.taskIds));
+        }
     }
 
     return (

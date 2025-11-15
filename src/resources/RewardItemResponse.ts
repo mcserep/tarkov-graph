@@ -12,11 +12,11 @@ export interface FinishedRewards {
     craftUnlock: CraftUnlock[];
 }
 
-interface OfferUnlock {
+export interface OfferUnlock {
     item: Item;
 }
 
-interface CraftUnlock {
+export interface CraftUnlock {
     rewardItems: ContainedItems[]
 }
 

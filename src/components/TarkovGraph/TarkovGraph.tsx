@@ -9,20 +9,16 @@ import * as TarkovDevApi from "@/api/TarkovDevApi.ts";
 import {Task} from '@/resources/TaskResponse.ts';
 import {ProgressData} from '@/resources/ProgressResponse.ts';
 import {GraphLayout, GraphStylesheet} from '@/utils/GraphDecorator.ts';
+import {useTargetTask} from '@/contexts/TargetTaskContext.tsx';
 
 import './TarkovGraph.css'
 
 type Props = {
     progress: ProgressData | null;
-    targetTaskIds: Set<string>;
-    setTargetTaskIds: (taskIds: Set<string>) => void;
 }
 
-export function TarkovGraph({
-    progress,
-    targetTaskIds,
-    setTargetTaskIds,
-}: Props) {
+export function TarkovGraph({progress}: Props) {
+    const {targetTaskIds, setTargetTaskIds} = useTargetTask();
     Cytoscape.use(dagre); // Register the dagre layout extension
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -36,7 +32,7 @@ export function TarkovGraph({
             const loadSnackKey = enqueueSnackbar('Fetching Tarkov tasks...', {variant: 'info'});
 
             try {
-                const data = await TarkovDevApi.fetchAllTasks();
+                const data = await TarkovDevApi.fetchTasks();
                 setTasks(data.tasks);
             } catch (err) {
                 if (err instanceof ClientError) {
