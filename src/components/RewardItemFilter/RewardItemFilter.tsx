@@ -1,7 +1,7 @@
 import {Autocomplete, TextField} from "@mui/material";
 import {SyntheticEvent, useEffect, useState} from "react";
 
-import {fetchRewardItems} from "@/api/TarkovDevApi.ts";
+import {TarkovDevApi} from "@/api/TarkovDevApi.ts";
 import {Item, RewardItemResponse} from "@/resources/RewardItemResponse.ts";
 import {useTargetTask} from "@/contexts/TargetTaskContext.tsx";
 
@@ -17,7 +17,8 @@ export function RewardItemFilter() {
 
     useEffect(() => {
         const fetchTaskRewards = async () => {
-            const taskResponse = await fetchRewardItems();
+            const api = new TarkovDevApi();
+            const taskResponse = await api.fetchRewardItems();
             const rewardItems = buildRewardItemArray(taskResponse);
             setTaskRewards(rewardItems);
         };

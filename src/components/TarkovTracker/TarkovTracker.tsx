@@ -2,12 +2,11 @@ import {useEffect, useRef, useState} from 'react';
 import {Button, TextField, Typography, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent} from '@mui/material';
 import {useSnackbar} from 'notistack';
 
-import * as TarkovTrackerApi from '@/api/TarkovTrackerApi.ts';
+import {TarkovTrackerApi, TarkovTrackerServer} from '@/api/TarkovTrackerApi.ts';
 import {ProgressData} from '@/resources/ProgressResponse.ts';
-import {TarkovTrackerServer} from '@/api/TarkovTrackerApi.ts';
 
 type Props = {
-    onProgressLoaded: (progress: ProgressData) => void;
+    onProgressLoaded: (userProgress: ProgressData, teamProgress: ProgressData[]) => void;
 }
 
 export function TarkovTracker({
@@ -19,7 +18,7 @@ export function TarkovTracker({
         (localStorage.getItem('tarkovTrackerServer') as TarkovTrackerServer) ?? 'tarkovtracker.io'
     );
 
-    const [progress, setProgress] = useState<ProgressData | null>(null);
+    const [userProgress, setUserProgress] = useState<ProgressData | null>(null);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     useEffect(() => {
@@ -28,11 +27,31 @@ export function TarkovTracker({
                 return;
             }
 
-            const loadSnackKey = enqueueSnackbar('Fetching user progress...', {variant: 'info'});
+            const api = new TarkovTrackerApi(trackerToken, trackerServer);
+
+            let loadSnackKey = enqueueSnackbar('Fetching token permissions...', {variant: 'info'});
             try {
-                const data = await TarkovTrackerApi.fetchUserProgress(trackerToken, trackerServer);
-                setProgress(data);
-                onProgressLoaded(data);
+                const permissions = await api.fetchTokenPermissions();
+                closeSnackbar(loadSnackKey);
+
+                if (!permissions.includes('GP')) {
+                    enqueueSnackbar('The provided token does not have the required permission "Get Personal Progress".', {variant: 'error'});
+                    return;
+                }
+
+                loadSnackKey = enqueueSnackbar('Fetching user progress...', {variant: 'info'});
+                const userProgress = await api.fetchUserProgress();
+                setUserProgress(userProgress);
+
+                let teamProgress: ProgressData[] = [];
+                if (permissions.includes('TP')) {
+                    closeSnackbar(loadSnackKey);
+
+                    loadSnackKey = enqueueSnackbar('Fetching team progress...', {variant: 'info'});
+                    teamProgress = await api.fetchTeamProgress();
+                }
+
+                onProgressLoaded(userProgress, teamProgress);
             } catch (err) {
                 enqueueSnackbar(`Tarkov Tracker Error: ${(err as Error).message}`, {variant: 'error'});
             } finally {
@@ -71,10 +90,10 @@ export function TarkovTracker({
             </Typography>
             {trackerToken.length > 0 ?
                 <>
-                    {progress ?
+                    {userProgress ?
                         <>
                             <Typography variant="body1">
-                                <strong>{progress?.displayName}</strong> ({progress?.playerLevel})
+                                <strong>{userProgress?.displayName}</strong> ({userProgress?.playerLevel})
                             </Typography>
                         </> : null}
                     <Button variant="contained"

@@ -1,11 +1,11 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useSnackbar} from 'notistack';
 import Cytoscape from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import dagre from 'cytoscape-dagre';
 import {ClientError} from 'graphql-request'
 
-import * as TarkovDevApi from "@/api/TarkovDevApi.ts";
+import {TarkovDevApi} from "@/api/TarkovDevApi.ts";
 import {Task} from '@/resources/TaskResponse.ts';
 import {ProgressData} from '@/resources/ProgressResponse.ts';
 import {GraphLayout, GraphStylesheet} from '@/utils/GraphDecorator.ts';
@@ -14,10 +14,11 @@ import {useTargetTask} from '@/contexts/TargetTaskContext.tsx';
 import './TarkovGraph.css'
 
 type Props = {
-    progress: ProgressData | null;
+    userProgress: ProgressData | null;
+    teamProgress: ProgressData[] | null;
 }
 
-export function TarkovGraph({progress}: Props) {
+export function TarkovGraph({userProgress, teamProgress}: Props) {
     const {targetTaskIds, setTargetTaskIds} = useTargetTask();
     Cytoscape.use(dagre); // Register the dagre layout extension
 
@@ -32,7 +33,8 @@ export function TarkovGraph({progress}: Props) {
             const loadSnackKey = enqueueSnackbar('Fetching Tarkov tasks...', {variant: 'info'});
 
             try {
-                const data = await TarkovDevApi.fetchTasks();
+                const api = new TarkovDevApi();
+                const data = await api.fetchTasks();
                 setTasks(data.tasks);
             } catch (err) {
                 if (err instanceof ClientError) {
@@ -53,6 +55,23 @@ export function TarkovGraph({progress}: Props) {
         fetchTasks();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Create a map of task IDs to their completedByNames, memoized for performance
+    const taskCompletedBy = useMemo(() => {
+        const map = new Map<string, string[]>();
+        tasks.forEach((task) => {
+            if (task.taskRequirements.length > 50)
+                return;
+            // Determine which team members completed this task
+            const completedByNames: string[] = (teamProgress ?? []).reduce<string[]>((members, memberProgress) => {
+                const found = memberProgress.tasksProgress.find((tp) => tp.id === task.id && tp.complete);
+                if (found) members.push(memberProgress.displayName);
+                return members;
+            }, []);
+            map.set(task.id, completedByNames);
+        });
+        return map;
+    }, [tasks, teamProgress]);
 
     useEffect(() => {
         if (!cytoscape)
@@ -79,6 +98,7 @@ export function TarkovGraph({progress}: Props) {
     // Build the graph
     const nodes: Cytoscape.NodeDefinition[] = [];
     const edges: Cytoscape.EdgeDefinition[] = [];
+
     tasks.forEach((task) => {
         if (task.taskRequirements.length > 50)
             return;
@@ -90,12 +110,15 @@ export function TarkovGraph({progress}: Props) {
                 trader: task.trader.name,
                 level: task.minPlayerLevel,
                 wikiLink: task.wikiLink,
-                imageLink: task.taskImageLink
+                imageLink: task.taskImageLink,
             }
         });
         task.taskRequirements.forEach((req) => {
+            // Use the completedByNames from the SOURCE task (req.task.id), not the target task
+            const sourceCompletedByNames = taskCompletedBy.get(req.task.id) ?? [];
             edges.push({
                 data: {
+                    label: sourceCompletedByNames.join(', '),
                     source: req.task.id,
                     target: task.id
                 }
@@ -103,7 +126,7 @@ export function TarkovGraph({progress}: Props) {
         });
     });
 
-    progress?.tasksProgress.forEach((taskProgress) => {
+    userProgress?.tasksProgress.forEach((taskProgress) => {
         const node = nodes.find((node) => node.data.id === taskProgress.id);
         if (node) {
             node.classes = 'completed';
