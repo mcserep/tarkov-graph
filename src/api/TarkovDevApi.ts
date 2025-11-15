@@ -2,7 +2,7 @@ import {GraphQLClient} from 'graphql-request';
 import {TaskResponse} from '../resources/TaskResponse.ts';
 import {RewardItemResponse} from '../resources/RewardItemResponse.ts';
 
-export const endpoint = 'https://api.tarkov.dev/graphql';
+const endpoint = 'https://api.tarkov.dev/graphql';
 
 const tasksQuery = `
 {
@@ -46,13 +46,18 @@ const rewardItemsQuery = `
     }
 }`;
 
-export async function fetchTasks() {
-    const client = new GraphQLClient(endpoint);
-    return await client.request<TaskResponse>(tasksQuery);
-}
+export class TarkovDevApi {
+    private client: GraphQLClient;
 
-export async function fetchRewardItems() {
-    const client = new GraphQLClient(endpoint);
-    return await client.request<RewardItemResponse>(rewardItemsQuery);
-}
+    constructor() {
+        this.client = new GraphQLClient(endpoint);
+    }
 
+    async fetchTasks(): Promise<TaskResponse> {
+        return await this.client.request<TaskResponse>(tasksQuery);
+    }
+
+    async fetchRewardItems(): Promise<RewardItemResponse> {
+        return await this.client.request<RewardItemResponse>(rewardItemsQuery);
+    }
+}

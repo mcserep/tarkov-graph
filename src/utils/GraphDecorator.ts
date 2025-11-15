@@ -49,48 +49,52 @@ function getNodeLabelPosition(label: string): number
 
 export const GraphStylesheet: Cytoscape.Stylesheet[] = [
     {
-        selector: "node",
+        selector: 'node',
         style: {
-            label: "data(label)", // Use the `label` attribute for node text
+            label: 'data(label)', // Use the `label` attribute for node text
             width: (node: Cytoscape.NodeSingular) => getNodeWidth(node.data('label')),
             height: 50,
             shape: 'rectangle',
-            color: "#fff",
-            "text-halign": "right",
-            "text-valign": "center",
+            color: '#fff',
+            'text-halign': 'right',
+            'text-valign': 'center',
             'background-color': (node: Cytoscape.NodeSingular) => getNodeColor(node.data('trader')),
             'background-image': (node: Cytoscape.NodeSingular) => getNodeImage(node.data('trader')),
             'background-fit': 'contain',
             'background-position-x': '0',
-            "text-margin-x": (node: Cytoscape.NodeSingular) => getNodeLabelPosition(node.data('label')),
+            'text-margin-x': (node: Cytoscape.NodeSingular) => getNodeLabelPosition(node.data('label')),
         },
     },
     {
-        selector: "edge",
+        selector: 'edge',
         style: {
+            'label': 'data(label)', // Use the `label` attribute for edge text
             width: 2,
-            "arrow-scale": 2,
-            "target-arrow-shape": "triangle",
-            "curve-style": "bezier",
+            'arrow-scale': 2,
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier',
+            // @ts-expect-error It seems that Cytoscape type definitions are missing 'edge-text-rotation'.
+            'edge-text-rotation': 'autorotate', // rotate text along the edge
+            'text-margin-y': -8, // moves text away from the line
         },
     },
     {
-        selector: "edge.highlighted",
+        selector: 'edge.highlighted',
         style: {
-            "line-color": "red",
-            "target-arrow-color": "red",
-            "width": 4,
+            'line-color': 'red',
+            'target-arrow-color': 'red',
+            'width': 4,
         },
     },
     {
-        selector: "edge.completed",
+        selector: 'edge.completed',
         style: {
-            "line-color": "green",
-            "target-arrow-color": "green",
+            'line-color': 'green',
+            'target-arrow-color': 'green',
         },
     },
     {
-        selector: "node.completed",
+        selector: 'node.completed',
         style: {},
     },
 ];

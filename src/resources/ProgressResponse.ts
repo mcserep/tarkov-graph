@@ -16,3 +16,7 @@ export interface ProgressData {
 export interface ProgressResponse {
     data: ProgressData;
 }
+
+export interface TeamProgressResponse {
+    data: ProgressData[];
+}

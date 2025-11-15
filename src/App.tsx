@@ -13,10 +13,12 @@ import './App.css'
 
 function App() {
     const [userProgress, setUserProgress] = useState<ProgressData | null>(null);
+    const [teamProgress, setTeamProgress] = useState<ProgressData[] | null>(null);
     const [theme, setTheme] = useState<Theme>(createTheme());
 
-    const handleUserProgressLoaded = (progress: ProgressData) => {
-        setUserProgress(progress);
+    const handleUserProgressLoaded = (userProgress: ProgressData, teamProgress: ProgressData[]) => {
+        setUserProgress(userProgress);
+        setTeamProgress(teamProgress);
     };
 
     return (
@@ -55,7 +57,8 @@ function App() {
                                 <Box sx={{p: 2, borderTop: "1px solid #ddd"}}>
                                     <RewardItemFilter/>
                                     <TarkovTracker
-                                        onProgressLoaded={handleUserProgressLoaded}/>
+                                        onProgressLoaded={handleUserProgressLoaded}
+                                    />
                                 </Box>
                             </Box>
                         </Drawer>
@@ -71,7 +74,10 @@ function App() {
                             <div className="theme-selector-div">
                                 <ThemeSelector theme={theme} setTheme={setTheme}/>
                             </div>
-                            <TarkovGraph progress={userProgress}/>
+                            <TarkovGraph
+                                userProgress={userProgress}
+                                teamProgress={teamProgress}
+                            />
                         </Box>
                     </Box>
                 </TargetTaskProvider>
