@@ -1,8 +1,13 @@
 import {ProgressData, ProgressResponse} from '../resources/ProgressResponse.ts';
 
-const endpoint = 'https://tarkovtracker.io/api/v2';
+export type TarkovTrackerServer = 'tarkovtracker.io' | 'tarkovtracker.org';
 
-export async function fetchUserProgress(token: string): Promise<ProgressData> {
+function getEndpoint(server: TarkovTrackerServer): string {
+    return `https://${server}/api/v2`;
+}
+
+export async function fetchUserProgress(token: string, server: TarkovTrackerServer = 'tarkovtracker.io'): Promise<ProgressData> {
+    const endpoint = getEndpoint(server);
     const response = await fetch(`${endpoint}/progress`, {
         method: 'GET',
         headers: {

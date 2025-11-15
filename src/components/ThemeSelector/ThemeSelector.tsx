@@ -21,6 +21,7 @@ export function ThemeSelector({
     useEffect(() => {
         const storedTheme = getStoredTheme();
         setTheme(storedTheme);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

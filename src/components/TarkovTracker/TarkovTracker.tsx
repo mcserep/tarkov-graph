@@ -1,9 +1,10 @@
 import {useEffect, useRef, useState} from 'react';
-import {Button, TextField, Typography} from '@mui/material';
+import {Button, TextField, Typography, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent} from '@mui/material';
 import {useSnackbar} from 'notistack';
 
 import * as TarkovTrackerApi from '@/api/TarkovTrackerApi.ts';
 import {ProgressData} from '@/resources/ProgressResponse.ts';
+import {TarkovTrackerServer} from '@/api/TarkovTrackerApi.ts';
 
 type Props = {
     onProgressLoaded: (progress: ProgressData) => void;
@@ -14,6 +15,9 @@ export function TarkovTracker({
 }: Props) {
     const inputTokenRef = useRef<HTMLInputElement>(null);
     const [trackerToken, setTrackerToken] = useState<string>(localStorage.getItem('tarkovTrackerToken') ?? '');
+    const [trackerServer, setTrackerServer] = useState<TarkovTrackerServer>(
+        (localStorage.getItem('tarkovTrackerServer') as TarkovTrackerServer) ?? 'tarkovtracker.io'
+    );
 
     const [progress, setProgress] = useState<ProgressData | null>(null);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -26,7 +30,7 @@ export function TarkovTracker({
 
             const loadSnackKey = enqueueSnackbar('Fetching user progress...', {variant: 'info'});
             try {
-                const data = await TarkovTrackerApi.fetchUserProgress(trackerToken);
+                const data = await TarkovTrackerApi.fetchUserProgress(trackerToken, trackerServer);
                 setProgress(data);
                 onProgressLoaded(data);
             } catch (err) {
@@ -40,7 +44,7 @@ export function TarkovTracker({
         // This rule is disabled, because it wants to add onProgressLoaded to the dependency array,
         // which would cause an infinite loop of re-renders.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [trackerToken]);
+    }, [trackerToken, trackerServer]);
 
     const handleSetToken = () => {
         if (inputTokenRef.current) {
@@ -52,6 +56,12 @@ export function TarkovTracker({
     const handleClearToken = () => {
         setTrackerToken('');
         localStorage.removeItem('tarkovTrackerToken');
+    };
+
+    const handleServerChange = (event: SelectChangeEvent<TarkovTrackerServer>) => {
+        const newServer = event.target.value as TarkovTrackerServer;
+        setTrackerServer(newServer);
+        localStorage.setItem('tarkovTrackerServer', newServer);
     };
 
     return (
@@ -75,6 +85,18 @@ export function TarkovTracker({
                 </>
                 :
                 <>
+                    <FormControl fullWidth size="small" sx={{mb: 2}}>
+                        <InputLabel id="server-select-label">Server</InputLabel>
+                        <Select
+                            labelId="server-select-label"
+                            value={trackerServer}
+                            label="Server"
+                            onChange={handleServerChange}
+                        >
+                            <MenuItem value="tarkovtracker.io">tarkovtracker.io</MenuItem>
+                            <MenuItem value="tarkovtracker.org">tarkovtracker.org</MenuItem>
+                        </Select>
+                    </FormControl>
                     <TextField
                         fullWidth
                         label="Token"
