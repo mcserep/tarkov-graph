@@ -24,7 +24,7 @@ export function TarkovGraph({progress}: Props) {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const [graphApi, setGraphApi] = useState<Cytoscape.Core | undefined>(undefined);
+    const [cytoscape, setCytoscape] = useState<Cytoscape.Core | undefined>(undefined);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -55,12 +55,12 @@ export function TarkovGraph({progress}: Props) {
     }, []);
 
     useEffect(() => {
-        if (!graphApi) return;
-        graphApi.edges().removeClass('highlighted'); // Remove the highlighted class from all edges
-        if (targetTaskIds.size === 0) return;
+        if (!cytoscape)
+            return;
+        cytoscape.edges().removeClass('highlighted'); // Remove the highlighted class from all edges
 
         for (const targetTaskId of targetTaskIds) {
-            const node = graphApi.getElementById(targetTaskId);
+            const node = cytoscape.getElementById(targetTaskId);
             const allEdges = node.incomers('edge');
 
             const highlightEdges = (edges: Cytoscape.EdgeCollection) => {
@@ -74,7 +74,7 @@ export function TarkovGraph({progress}: Props) {
 
             highlightEdges(allEdges);
         }
-    }, [graphApi, targetTaskIds]);
+    }, [cytoscape, targetTaskIds]);
 
     // Build the graph
     const nodes: Cytoscape.NodeDefinition[] = [];
@@ -119,7 +119,7 @@ export function TarkovGraph({progress}: Props) {
     const elements = CytoscapeComponent.normalizeElements({nodes, edges});
 
     const onNodeClick = (event: Cytoscape.EventObject) => {
-        const taskId = event.target[0].id();
+        const taskId = event.target.id();
         if (!targetTaskIds.delete(taskId)) {
             targetTaskIds.add(taskId);
         }
@@ -138,7 +138,7 @@ export function TarkovGraph({progress}: Props) {
                     layout={GraphLayout}
                     stylesheet={GraphStylesheet}
                     cy={(cy) => {
-                        setGraphApi(cy);
+                        setCytoscape(cy);
                         cy.on('tap', 'node', onNodeClick); // Bind the tap event for node clicks
                     }}/>
             }
