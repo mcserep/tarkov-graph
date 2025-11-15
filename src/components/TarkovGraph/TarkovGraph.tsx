@@ -95,51 +95,53 @@ export function TarkovGraph({userProgress, teamProgress}: Props) {
         }
     }, [cytoscape, targetTaskIds]);
 
-    // Build the graph
-    const nodes: Cytoscape.NodeDefinition[] = [];
-    const edges: Cytoscape.EdgeDefinition[] = [];
+    // Build the graph - memoized to prevent recalculation on every render
+    const elements = useMemo(() => {
+        const nodes: Cytoscape.NodeDefinition[] = [];
+        const edges: Cytoscape.EdgeDefinition[] = [];
 
-    tasks.forEach((task) => {
-        if (task.taskRequirements.length > 50)
-            return;
+        tasks.forEach((task) => {
+            if (task.taskRequirements.length > 50)
+                return;
 
-        nodes.push({
-            data: {
-                id: task.id,
-                label: task.name,
-                trader: task.trader.name,
-                level: task.minPlayerLevel,
-                wikiLink: task.wikiLink,
-                imageLink: task.taskImageLink,
-            }
-        });
-        task.taskRequirements.forEach((req) => {
-            // Use the completedByNames from the SOURCE task (req.task.id), not the target task
-            const sourceCompletedByNames = taskCompletedBy.get(req.task.id) ?? [];
-            edges.push({
+            nodes.push({
                 data: {
-                    label: sourceCompletedByNames.join(', '),
-                    source: req.task.id,
-                    target: task.id
+                    id: task.id,
+                    label: task.name,
+                    trader: task.trader.name,
+                    level: task.minPlayerLevel,
+                    wikiLink: task.wikiLink,
+                    imageLink: task.taskImageLink,
                 }
             });
-        });
-    });
-
-    userProgress?.tasksProgress.forEach((taskProgress) => {
-        const node = nodes.find((node) => node.data.id === taskProgress.id);
-        if (node) {
-            node.classes = 'completed';
-        }
-
-        edges
-            .filter((edge) => edge.data.source === taskProgress.id)
-            .forEach((edge) => {
-                edge.classes = 'completed';
+            task.taskRequirements.forEach((req) => {
+                // Use the completedByNames from the SOURCE task (req.task.id), not the target task
+                const sourceCompletedByNames = taskCompletedBy.get(req.task.id) ?? [];
+                edges.push({
+                    data: {
+                        label: sourceCompletedByNames.join(', '),
+                        source: req.task.id,
+                        target: task.id
+                    }
+                });
             });
-    });
+        });
 
-    const elements = CytoscapeComponent.normalizeElements({nodes, edges});
+        userProgress?.tasksProgress.forEach((taskProgress) => {
+            const node = nodes.find((node) => node.data.id === taskProgress.id);
+            if (node) {
+                node.classes = 'completed';
+            }
+
+            edges
+                .filter((edge) => edge.data.source === taskProgress.id)
+                .forEach((edge) => {
+                    edge.classes = 'completed';
+                });
+        });
+
+        return CytoscapeComponent.normalizeElements({nodes, edges});
+    }, [tasks, taskCompletedBy, userProgress]);
 
     const onNodeClick = (event: Cytoscape.EventObject) => {
         const taskId = event.target.id();
