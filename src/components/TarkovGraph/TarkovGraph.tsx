@@ -128,13 +128,13 @@ export function TarkovGraph({userProgress, teamProgress}: Props) {
         });
 
         userProgress?.tasksProgress.forEach((taskProgress) => {
-            const node = nodes.find((node) => node.data.id === taskProgress.id);
+            const node = nodes.find((node) => node.data.id === taskProgress.id && taskProgress.complete);
             if (node) {
                 node.classes = 'completed';
             }
 
             edges
-                .filter((edge) => edge.data.source === taskProgress.id)
+                .filter((edge) => edge.data.source === taskProgress.id && taskProgress.complete)
                 .forEach((edge) => {
                     edge.classes = 'completed';
                 });
