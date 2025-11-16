@@ -162,10 +162,12 @@ export function TarkovGraph({userProgress, teamProgress}: Props) {
                     elements={elements}
                     layout={GraphLayout}
                     stylesheet={GraphStylesheet}
+                    wheelSensitivity={6}
                     cy={(cy) => {
                         setCytoscape(cy);
                         cy.on('tap', 'node', onNodeClick); // Bind the tap event for node clicks
-                    }}/>
+                    }}
+                />
             }
         </>
     )

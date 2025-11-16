@@ -47,7 +47,7 @@ function getNodeLabelPosition(label: string): number
     return -145 - ((label.length - 20) * 10);
 }
 
-export const GraphStylesheet: Cytoscape.Stylesheet[] = [
+export const GraphStylesheet: Cytoscape.StylesheetStyle[] = [
     {
         selector: 'node',
         style: {
